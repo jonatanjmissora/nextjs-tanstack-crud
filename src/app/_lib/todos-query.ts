@@ -6,6 +6,6 @@ export const useTodo = () => {
 		queryKey: ["todos"],
 		queryFn: getTodos,
 		// refetchOnWindowFocus: false,
-		// refetchInterval: 10 * 1000,
+		refetchInterval: 15 * 1000,
 	})
 }

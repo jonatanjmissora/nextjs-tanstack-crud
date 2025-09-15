@@ -9,14 +9,28 @@ export const useCreateTodo = () => {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: createTodo,
-		onSuccess: async (newTodo: TodoType) => {
+		onMutate: async ({ newTodo }: { newTodo: TodoType }) => {
 			await queryClient.cancelQueries({ queryKey: ["todos"] })
-			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
-			if (!todos) return
-			const newTodos = [newTodo, ...(todos || [])]
-			queryClient.setQueryData(["todos"], newTodos)
-			// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+			const previousTodos = queryClient.getQueryData<TodoType[]>(["todos"])
+			if (!previousTodos) return
+			queryClient.setQueryData(["todos"], (oldTodos: TodoType[]) => [
+				{ ...newTodo, title: `${newTodo.title} *` },
+				...(oldTodos || []),
+			])
+			return { previousTodos }
 		},
+		onError: (_err, _newTodo, context) => {
+			queryClient.setQueryData(["todos"], context?.previousTodos)
+		},
+		//  SIN OPTIMISTIC
+		// onSuccess: async (newTodo: TodoType) => {
+		// 	await queryClient.cancelQueries({ queryKey: ["todos"] })
+		// 	const todos = queryClient.getQueryData<TodoType[]>(["todos"])
+		// 	if (!todos) return
+		// 	const newTodos = [newTodo, ...(todos || [])]
+		// queryClient.setQueryData(["todos"], newTodos)
+		// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+		// },
 	})
 }
 
@@ -31,7 +45,9 @@ export const useUpdateTodo = () => {
 			if (!previousTodos) return
 			queryClient.setQueryData(["todos"], (oldTodos: TodoType[]) =>
 				oldTodos?.map(todo =>
-					todo.id === updatedTodo.todo.id ? updatedTodo.todo : todo
+					todo.id === updatedTodo.todo.id
+						? { ...updatedTodo.todo, title: `${updatedTodo.todo.title} *` }
+						: todo
 				)
 			)
 			return { previousTodos }
