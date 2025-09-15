@@ -1,9 +1,23 @@
 "use client"
 
+import { startTransition } from "react"
+import { useUpdateTodo } from "../_actions/mutation"
 import { TodoType } from "../_lib/types"
+import { toast } from "sonner"
 
 export default function TodoItem({ todo }: { todo: TodoType }) {
-	const handleCheck = async () => {}
+	const { mutateAsync: updateTodo } = useUpdateTodo()
+
+	const handleCheck = async () => {
+		const updatedTodo = { ...todo, completed: !todo.completed }
+		startTransition(() => {
+			toast.promise(updateTodo({ todo: updatedTodo }), {
+				loading: "actualizando todo...",
+				success: "todo actualizado exitosamente",
+				error: "error al actualizar todo",
+			})
+		})
+	}
 
 	const handleDelete = async () => {}
 

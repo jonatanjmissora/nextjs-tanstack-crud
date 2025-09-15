@@ -9,7 +9,14 @@ import { useCreateTodo } from "../_actions/mutation"
 
 export default function TodosList() {
 	const [title, setTitle] = useState("")
-	const { data: todos, error, isLoading } = useTodo()
+	const {
+		data: todos,
+		error,
+		isLoading,
+		isRefetching,
+		status,
+		isFetching,
+	} = useTodo()
 	const { mutateAsync: createTodo } = useCreateTodo()
 
 	const handleCreateTodo = async () => {
@@ -48,8 +55,9 @@ export default function TodosList() {
 				>
 					Enviar
 				</button>
-				{false && <span>mutating...</span>}
-				{false && <span>validating...</span>}
+				{status === "pending" && <span>pending...</span>}
+				{isFetching && <span>fetching...</span>}
+				{isRefetching && <span>refetching...</span>}
 			</div>
 
 			{isLoading ? (

@@ -1,8 +1,33 @@
 import { useMutation } from "@tanstack/react-query"
 import { createTodo } from "./create-todo"
+import { updateTodo } from "./update-todo"
+import { useQueryClient } from "@tanstack/react-query"
+import { TodoType } from "../_lib/types"
 
 export const useCreateTodo = () => {
+	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: createTodo,
+		onSuccess: async (newTodo: TodoType) => {
+			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
+			const newTodos = [newTodo, ...(todos || [])]
+			queryClient.setQueryData(["todos"], newTodos)
+			// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+		},
+	})
+}
+
+export const useUpdateTodo = () => {
+	const queryClient = useQueryClient()
+	return useMutation({
+		mutationFn: updateTodo,
+		onSuccess: async (updatedTodo: TodoType) => {
+			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
+			const newTodos = todos?.map(todo =>
+				todo.id === updatedTodo.id ? updatedTodo : todo
+			)
+			queryClient.setQueryData(["todos"], newTodos)
+			// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+		},
 	})
 }
