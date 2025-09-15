@@ -1,12 +1,13 @@
 "use client"
 
 import { startTransition } from "react"
-import { useUpdateTodo } from "../_actions/mutation"
+import { useDeleteTodo, useUpdateTodo } from "../_actions/mutation"
 import { TodoType } from "../_lib/types"
 import { toast } from "sonner"
 
 export default function TodoItem({ todo }: { todo: TodoType }) {
 	const { mutateAsync: updateTodo } = useUpdateTodo()
+	const { mutateAsync: deleteTodo } = useDeleteTodo()
 
 	const handleCheck = async () => {
 		const updatedTodo = { ...todo, completed: !todo.completed }
@@ -19,7 +20,15 @@ export default function TodoItem({ todo }: { todo: TodoType }) {
 		})
 	}
 
-	const handleDelete = async () => {}
+	const handleDelete = async () => {
+		startTransition(() => {
+			toast.promise(deleteTodo({ todo }), {
+				loading: "borrando todo...",
+				success: "todo borrado exitosamente",
+				error: "error al borrar todo",
+			})
+		})
+	}
 
 	return (
 		<li className="grid grid-cols-[0.2fr_1fr_0.25fr] items-center gap-4 py-2">
