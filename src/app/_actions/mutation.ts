@@ -10,6 +10,7 @@ export const useCreateTodo = () => {
 	return useMutation({
 		mutationFn: createTodo,
 		onSuccess: async (newTodo: TodoType) => {
+			await queryClient.cancelQueries({ queryKey: ["todos"] })
 			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
 			if (!todos) return
 			const newTodos = [newTodo, ...(todos || [])]
@@ -23,15 +24,33 @@ export const useUpdateTodo = () => {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: updateTodo,
-		onSuccess: async (updatedTodo: TodoType) => {
-			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
-			if (!todos) return
-			const newTodos = todos?.map(todo =>
-				todo.id === updatedTodo.id ? updatedTodo : todo
+		// CON OPTIMISTIC
+		onMutate: async (updatedTodo: { todo: TodoType }) => {
+			await queryClient.cancelQueries({ queryKey: ["todos"] })
+			const previousTodos = queryClient.getQueryData<TodoType[]>(["todos"])
+			if (!previousTodos) return
+			queryClient.setQueryData(["todos"], (oldTodos: TodoType[]) =>
+				oldTodos?.map(todo =>
+					todo.id === updatedTodo.todo.id ? updatedTodo.todo : todo
+				)
 			)
-			queryClient.setQueryData(["todos"], newTodos)
-			// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+			return { previousTodos }
 		},
+		onError: (_err, _newTodo, context) => {
+			queryClient.setQueryData(["todos"], context?.previousTodos)
+		},
+
+		//  SIN OPTIMISTIC
+		// onSuccess: async (updatedTodo: TodoType) => {
+		// await queryClient.cancelQueries({ queryKey: ["todos"] })
+		// 	const todos = queryClient.getQueryData<TodoType[]>(["todos"])
+		// 	if (!todos) return
+		// 	const newTodos = todos?.map(todo =>
+		// 		todo.id === updatedTodo.id ? updatedTodo : todo
+		// 	)
+		// 	queryClient.setQueryData(["todos"], newTodos)
+		// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+		// },
 	})
 }
 
@@ -39,8 +58,9 @@ export const useDeleteTodo = () => {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: deleteTodo,
-		onSuccess: deletedTodoId => {
+		onSuccess: async deletedTodoId => {
 			if (deletedTodoId === 0) return
+			await queryClient.cancelQueries({ queryKey: ["todos"] })
 			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
 			if (!todos) return
 			const newTodos = todos.filter(todo => todo.id !== deletedTodoId)
