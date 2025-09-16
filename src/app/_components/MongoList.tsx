@@ -1,40 +1,38 @@
 "use client"
 
-import { useTodo } from "../_lib/todos-query"
+import { MongoNoteType } from "../_lib/types"
 import { startTransition, useState } from "react"
-import { TodoType } from "../_lib/types"
-import TodoItem from "./TodoItem"
 import { toast } from "sonner"
-import { useCreateTodo } from "../_actions/mutation"
+import { useCreateMongoNote } from "../_actions/mongo/mutation"
+import { useMongoNotes } from "../_lib/mongo-query"
+import { NoteItem } from "./MongoItem"
 
-export default function TodosList() {
+export default function MongoList() {
 	const [title, setTitle] = useState("")
+	const [content, setContent] = useState("")
 	const {
-		data: todos,
+		data: notes,
 		error,
 		isLoading,
-		isRefetching,
 		status,
 		isFetching,
-	} = useTodo()
-	const { mutateAsync: createTodo, isPending } = useCreateTodo()
+		isRefetching,
+	} = useMongoNotes()
+	const { mutateAsync: createNoteMutation, isPending } = useCreateMongoNote()
 
 	const handleCreateTodo = async () => {
-		const newTodo = {
-			userId: 1,
-			id: Date.now(),
+		const newNote: MongoNoteType = {
 			title,
-			completed: false,
+			content,
 		}
-
 		startTransition(async () => {
-			toast.promise(createTodo({ newTodo }), {
-				loading: "creando todo...",
-				success: "todo creado exitosamente",
-				error: "error al crear todo",
+			toast.promise(createNoteMutation(newNote), {
+				loading: "creando note...",
+				success: "note creado exitosamente",
+				error: "error al crear note",
 			})
-
 			setTitle("")
+			setContent("")
 		})
 	}
 
@@ -43,13 +41,19 @@ export default function TodosList() {
 			<div className="w-[700px] mx-auto flex gap-4 items-center p-4">
 				<input
 					className="border border-slate-600 bg-slate-600/20 rounded px-2 py-1"
-					placeholder="Agregar todo"
+					placeholder="titulo"
 					type="text"
 					value={title}
 					onChange={e => setTitle(e.target.value)}
 				/>
+				<input
+					className="border border-slate-600 bg-slate-600/20 rounded px-2 py-1"
+					placeholder="content"
+					type="text"
+					value={content}
+					onChange={e => setContent(e.target.value)}
+				/>
 				<button
-					type="button"
 					onClick={handleCreateTodo}
 					className={`bg-slate-600/20 px-2 py-1 rounded ${isPending || title.trim() === "" || isLoading ? "cursor-not-allowed" : "cursor-pointer"}`}
 					disabled={isPending || title.trim() === "" || isLoading}
@@ -67,8 +71,8 @@ export default function TodosList() {
 				<div>Error: {error.message}</div>
 			) : (
 				<ul className="mx-auto p-12 py-4 bg-slate-600/20 rounded-lg min-w-[700px] h-[700px] overflow-y-auto">
-					{todos?.map((todo: TodoType) => (
-						<TodoItem key={todo.id} todo={todo} />
+					{notes?.map((note: MongoNoteType) => (
+						<NoteItem key={note._id} note={note} />
 					))}
 				</ul>
 			)}

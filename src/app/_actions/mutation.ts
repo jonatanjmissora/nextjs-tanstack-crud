@@ -74,14 +74,17 @@ export const useDeleteTodo = () => {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: deleteTodo,
-		onSuccess: async deletedTodoId => {
-			if (deletedTodoId === 0) return
+		onMutate: async ({ todo }: { todo: TodoType }) => {
+			if (!todo?.id) return
 			await queryClient.cancelQueries({ queryKey: ["todos"] })
 			const todos = queryClient.getQueryData<TodoType[]>(["todos"])
 			if (!todos) return
-			const newTodos = todos.filter(todo => todo.id !== deletedTodoId)
+			const newTodos = todos.filter(t => t.id !== todo.id)
 			queryClient.setQueryData(["todos"], newTodos)
-			// await queryClient.invalidateQueries({ queryKey: ["todos"] })
+			return { previousTodos: todos }
+		},
+		onError: (_err, _variables, context) => {
+			queryClient.setQueryData(["todos"], context?.previousTodos)
 		},
 	})
 }
