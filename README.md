@@ -39,7 +39,9 @@
 * creas un dominio aleatorio en la pagina de ngrok, y ese va a ser el que usaremos en la aplicacion
 * sobre los ... que aparecen en el dominio, le das a ejecutar endpoint
 * copias el script, y le modificas el puerto a 3001 (es el que usa nuestra API)
-* pegas en terminal, y te dara un url que usaremos en la aplicacion
+	ngrok http --url=merry-uncatholical-kristie.ngrok-free.app 3001
+* pegas en navegador la url que salio en terminal para ver la aplicacion:
+	https://merry-uncatholical-kristie.ngrok-free.app/todos
 
 ---      
 
