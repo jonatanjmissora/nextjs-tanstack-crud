@@ -9,7 +9,7 @@ export const useCreateTodo = () => {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: createTodo,
-		onMutate: async ({ newTodo }: { newTodo: TodoType }) => {
+		onMutate: async (newTodo: TodoType) => {
 			await queryClient.cancelQueries({ queryKey: ["todos"] })
 			const previousTodos = queryClient.getQueryData<TodoType[]>(["todos"])
 			if (!previousTodos) return
@@ -39,14 +39,14 @@ export const useUpdateTodo = () => {
 	return useMutation({
 		mutationFn: updateTodo,
 		// CON OPTIMISTIC
-		onMutate: async (updatedTodo: { todo: TodoType }) => {
+		onMutate: async (updatedTodo: TodoType) => {
 			await queryClient.cancelQueries({ queryKey: ["todos"] })
 			const previousTodos = queryClient.getQueryData<TodoType[]>(["todos"])
 			if (!previousTodos) return
 			queryClient.setQueryData(["todos"], (oldTodos: TodoType[]) =>
 				oldTodos?.map(todo =>
-					todo.id === updatedTodo.todo.id
-						? { ...updatedTodo.todo, title: `${updatedTodo.todo.title} *` }
+					todo.id === updatedTodo.id
+						? { ...updatedTodo, title: `${updatedTodo.title} *` }
 						: todo
 				)
 			)
@@ -74,7 +74,7 @@ export const useDeleteTodo = () => {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: deleteTodo,
-		onMutate: async ({ todo }: { todo: TodoType }) => {
+		onMutate: async (todo: TodoType) => {
 			if (!todo?.id) return
 			await queryClient.cancelQueries({ queryKey: ["todos"] })
 			const todos = queryClient.getQueryData<TodoType[]>(["todos"])

@@ -28,12 +28,11 @@ export default function TodosList() {
 		}
 
 		startTransition(async () => {
-			toast.promise(createTodo({ newTodo }), {
+			toast.promise(createTodo(newTodo), {
 				loading: "creando todo...",
 				success: "todo creado exitosamente",
 				error: "error al crear todo",
 			})
-
 			setTitle("")
 		})
 	}

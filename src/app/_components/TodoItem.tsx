@@ -12,7 +12,7 @@ export default function TodoItem({ todo }: { todo: TodoType }) {
 	const handleCheck = async () => {
 		const updatedTodo = { ...todo, completed: !todo.completed }
 		startTransition(() => {
-			toast.promise(updateTodo({ todo: updatedTodo }), {
+			toast.promise(updateTodo(updatedTodo), {
 				loading: "actualizando todo...",
 				success: "todo actualizado exitosamente",
 				error: "error al actualizar todo",
@@ -22,7 +22,7 @@ export default function TodoItem({ todo }: { todo: TodoType }) {
 
 	const handleDelete = async () => {
 		startTransition(() => {
-			toast.promise(deleteTodo({ todo }), {
+			toast.promise(deleteTodo(todo), {
 				loading: "borrando todo...",
 				success: "todo borrado exitosamente",
 				error: "error al borrar todo",
