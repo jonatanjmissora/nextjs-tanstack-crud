@@ -46,23 +46,23 @@
 # Teoria:
 ##### instalamos:
 	bun add axios @tanstack/react-query sonner mongodb
-* creamos el [_lib/tanstack-provider.tsx](#tanstack-provider.tsx)
+* creamos el [_lib/tanstack-provider.tsx](#tanstack-providertsx)
 ### TODOS del json-server
-* seteamos para desarrollo y produccion el [_config/api.ts](#_config/api.ts)
-* creamos los [_lib/todos-query.ts](#todos-query.ts)
-* creamos el [_actions/todos-mutation.ts](#todos-mutation.ts) :
-	* [_actions/get-todos.ts](#get-todos.ts)
-    * [_actions/create-todo.ts](#create-todo.ts) 
-    * [_actions/update-todo.ts](#update-todo.ts) 
-    * [_actions/delete-todo.ts](#delete-todo.ts)
+* seteamos para desarrollo y produccion el [_config/api.ts](#_config/apits)
+* creamos los [_lib/todos-query.ts](#todos-queryts)
+* creamos el [_actions/todos-mutation.ts](#todos-mutationts) :
+	* [_actions/get-todos.ts](#get-todosts)
+    * [_actions/create-todo.ts](#create-todots) 
+    * [_actions/update-todo.ts](#update-todots) 
+    * [_actions/delete-todo.ts](#delete-todots)
 ### NOTAS MONGODB
-* creamos el [_lib/mongo-connect.ts](#mongo-connect.ts)
-* creamos el [_lib/mongo-query.ts](#mongo-query.ts)
-* creamos el [_actions/mongo/mongo-mutation.ts](#mongo-mutation.ts) :
-	* [_actions/mongo/get-mongoNotes.ts](#get-mongoNotes.ts)
-	* [_actions/mongo/create-mongoNote.ts](#create-mongoNote.ts)
-	* [_actions/mongo/update-mongoNote.ts](#update-mongoNote.ts)
-	* [_actions/mongo/delete-mongoNote.ts](#delete-mongoNote.ts)
+* creamos el [_lib/mongo-connect.ts](#mongo-connectts)
+* creamos el [_lib/mongo-query.ts](#mongo-queryts)
+* creamos el [_actions/mongo/mongo-mutation.ts](#mongo-mutationts) :
+	* [_actions/mongo/get-mongoNotes.ts](#get-mongoNotests)
+	* [_actions/mongo/create-mongoNote.ts](#create-mongoNotets)
+	* [_actions/mongo/update-mongoNote.ts](#update-mongoNotets)
+	* [_actions/mongo/delete-mongoNote.ts](#delete-mongoNotets)
 ### 2 formas para el toast
 * con un [id](#sonner_id)
 * con un [promise](#sonner_promise)
